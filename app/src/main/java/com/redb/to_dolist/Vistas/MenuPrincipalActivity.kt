@@ -6,12 +6,14 @@ import android.app.ListActivity
 import android.content.ClipData
 import android.content.Intent
 import android.os.Bundle
+import android.view.Gravity
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.RadioButton
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.GravityCompat
@@ -30,6 +32,7 @@ import com.redb.to_dolist.DB.Entidades.ListaEntity
 import com.redb.to_dolist.DB.Entidades.TareaEntity
 import com.redb.to_dolist.Modelos.FBModels.ListFB
 import com.redb.to_dolist.Modelos.FBModels.Task
+import com.redb.to_dolist.Modelos.FBModels.TaskInvitation
 import com.redb.to_dolist.Modelos.FBModels.User
 import com.redb.to_dolist.Modelos.Usuario
 import com.redb.to_dolist.VistaModelos.MenuPrincipalVM
@@ -69,7 +72,8 @@ class MenuPrincipalActivity : AppCompatActivity() {
         appBarConfiguration = AppBarConfiguration(
             setOf(
                 R.id.nav_home,
-                R.id.nav_add_lists
+                R.id.nav_add_lists,
+                R.id.nav_invitations
             ), drawerLayout
         )
 
@@ -87,7 +91,8 @@ class MenuPrincipalActivity : AppCompatActivity() {
 
 
         menu.findItem(R.id.nav_button_sync).setOnMenuItemClickListener {
-            //tvUserName.setText("probando sincronizacion")
+            navController.navigate(R.id.nav_invitations)
+            drawerLayout.closeDrawer(GravityCompat.START)
             true
         }
         menu.findItem(R.id.nav_button_all).setOnMenuItemClickListener {
@@ -373,11 +378,18 @@ class MenuPrincipalActivity : AppCompatActivity() {
             }
 
             R.id.actionbar_edit -> {
-                val toEditListIntent = Intent(this, ActivityList::class.java)
-                toEditListIntent.putExtra("forEdit", true)
-                toEditListIntent.putExtra("idList", "12345")
-
-                startActivity(toEditListIntent)
+                val usuarioActual = db.getUsuarioDao().getUsuarioByID(db.getAplicacionDao().getLoggedUser().toString())
+                val listaActual = db.getListaDao().getListByID(db.getAplicacionDao().getAplicationList())
+                if (usuarioActual.idUsuario==listaActual.idUsuario) {
+                    val toEditListIntent = Intent(this, ActivityList::class.java)
+                    toEditListIntent.putExtra("forEdit", true)
+                    toEditListIntent.putExtra("idList", db.getAplicacionDao().getAplicationList())
+                    startActivity(toEditListIntent)
+                }
+                else
+                {
+                    Toast.makeText(this,"No tienes permizo de editar esta lista",Toast.LENGTH_LONG).show()
+                }
 
                 true
             }
@@ -388,6 +400,30 @@ class MenuPrincipalActivity : AppCompatActivity() {
                 dialog.setTitle("Confirmar")
                 dialog.setPositiveButton("Si") { _, _ ->
 
+
+                    val usuarioActual = db.getUsuarioDao().getUsuarioByID(db.getAplicacionDao().getLoggedUser().toString())
+                    val listaActual = db.getListaDao().getListByID(db.getAplicacionDao().getAplicationList())
+                    if (usuarioActual.idUsuario==listaActual.idUsuario) {
+                        val listInvitationsReference = database.getReference("App").child("listInvitations").child(listaActual.idLista)
+                        listInvitationsReference.addListenerForSingleValueEvent(object : ValueEventListener{
+                            override fun onDataChange(p0: DataSnapshot) {
+                                p0.children.forEach{
+                                    val actualList:TaskInvitation? = it.getValue(TaskInvitation::class.java)
+                                    val userInvitacionReference =database.getReference("App").child("userInvitacions").child(actualList!!.idUser).child(it.key.toString()).setValue(null)
+
+                                }
+                            }
+
+                            override fun onCancelled(p0: DatabaseError) {
+                                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+                            }
+                        })
+
+                    }
+                    else
+                    {
+                        Toast.makeText(this,"No tienes permizo de editar esta lista",Toast.LENGTH_LONG).show()
+                    }
                 }
 
                 dialog.setNegativeButton("No") { _, _ ->
@@ -420,6 +456,10 @@ class MenuPrincipalActivity : AppCompatActivity() {
             else -> model.setCurrentTaskList(db.getTareaDao().getTaskFromList(listaActual).toMutableList())
         }
         //model.setCurrentTaskList(db.getTareaDao().getTaskFromList(listaActual).toMutableList())
+    }
+
+    fun handleInvitation( id : String, acepted : Boolean) {
+
     }
 
     override fun onBackPressed() {

@@ -10,7 +10,6 @@ import android.view.Gravity
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Button
-import android.widget.ImageView
 import android.widget.RadioButton
 import android.widget.TextView
 import android.widget.Toast
@@ -41,22 +40,22 @@ import com.redb.to_dolist.R
 class MenuPrincipalActivity : AppCompatActivity() {
 
     private lateinit var appBarConfiguration: AppBarConfiguration
-    private lateinit var tvUserName: TextView
-    private lateinit var tvUserMail: TextView
-    private lateinit var btnSincronizar: ClipData.Item
-    private lateinit var FotoIndex: ImageView
+    private lateinit var tvUserName:TextView
+    private lateinit var tvUserMail:TextView
+    private lateinit var btnSincronizar:ClipData.Item
 
     private val model by lazy { ViewModelProviders.of(this).get(MenuPrincipalVM::class.java) }
-    private lateinit var db: AppDatabase
-    private val database = FirebaseDatabase.getInstance()
+    private lateinit var db:AppDatabase
+    private val database=FirebaseDatabase.getInstance()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         val toolbar: Toolbar = findViewById(R.id.main_toolbar_toolbar)
         setSupportActionBar(toolbar)
+
         Stetho.initializeWithDefaults(this)
-        db = AppDatabase.getAppDatabase(this)
+        db =AppDatabase.getAppDatabase(this)
 
 //        val fab: FloatingActionButton = findViewById(R.id.main_fab_addButton)
 //        fab.setOnClickListener { view ->
@@ -65,7 +64,7 @@ class MenuPrincipalActivity : AppCompatActivity() {
 //        }
 
         val drawerLayout: DrawerLayout = findViewById(R.id.drawer_layout)
-        val navView: NavigationView = findViewById(R.id.nav_view)
+        val navView : NavigationView = findViewById(R.id.nav_view)
         val navController = findNavController(R.id.nav_host_fragment)
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
@@ -82,22 +81,18 @@ class MenuPrincipalActivity : AppCompatActivity() {
 
         val headerLayout = navView.getHeaderView(0)
 
-        tvUserName = headerLayout.findViewById(R.id.nav_textView_userName)
-        tvUserMail = headerLayout.findViewById(R.id.nav_textView_userMail)
-        FotoIndex = headerLayout.findViewById(R.id.nav_imageView_avatar)
-        val usuarioId = db.getAplicacionDao().getLoggedUser()!!
-        val index = db.getUsuarioDao().ConseguirFotoDePerfil(usuarioId)
-        FotoIndex.setImageResource(obtenerFoto(index))
+        tvUserName=headerLayout.findViewById(R.id.nav_textView_userName)
+        tvUserMail=headerLayout.findViewById(R.id.nav_textView_userMail)
 
         val menu = navView.menu
-        val usuarioActual = db.getAplicacionDao().getLoggedUser()
+        val usuarioActual=db.getAplicacionDao().getLoggedUser()
 
 
-        menu.findItem(R.id.nav_button_sync).setOnMenuItemClickListener {
+        /*menu.findItem(R.id.nav_invitations).setOnMenuItemClickListener {
             navController.navigate(R.id.nav_invitations)
             drawerLayout.closeDrawer(GravityCompat.START)
             true
-        }
+        }*/
         menu.findItem(R.id.nav_button_all).setOnMenuItemClickListener {
             model.setCurrentTaskList(db.getTareaDao().getAllTasks(usuarioActual.toString()) as MutableList<TareaEntity>)
             navController.navigate(R.id.nav_home)
@@ -120,42 +115,30 @@ class MenuPrincipalActivity : AppCompatActivity() {
             true
         }
         menu.findItem(R.id.nav_button_closeSession).setOnMenuItemClickListener {
-            val usuariologeado = db.getAplicacionDao().getLoggedUser()
-            Usuario.DeslogearUsuario(usuariologeado.toString(), db)
+            val usuariologeado=db.getAplicacionDao().getLoggedUser()
+            Usuario.DeslogearUsuario(usuariologeado.toString(),db)
             val intent = Intent(this@MenuPrincipalActivity, LoginActivity::class.java)
             startActivity(intent)
             true
-
-
         }
-
-       /* menu.findItem(R.id.nav_imageView_avatar).setOnMenuItemClickListener {
-
-            val usuarioId = db.getAplicacionDao().getLoggedUser()!!
-            val index = db.getUsuarioDao().ConseguirFotoDePerfil(usuarioId)
-            FotoIndex.setImageResource(obtenerFoto(index))
-            true
-
-        }*/
 
         db.getAplicacionDao().getAll()
 
 
+
 //      val userReference1=database.getReference("App").child("users").setValue("holita")
         //val userReference=database.getReference("App").child("users").orderByChild("email").equalTo("raul@hotmail.com")
-        val userReference =
-            database.getReference("App").child("users").child(usuarioActual.toString())
+        val userReference=database.getReference("App").child("users").child(usuarioActual.toString())
         //database.getReference("App").child("prueba").setValue("holita")
-        userReference.addValueEventListener(object : ValueEventListener {
+        userReference.addValueEventListener(object : ValueEventListener{
             override fun onCancelled(p0: DatabaseError) {
                 TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
             }
 
             override fun onDataChange(p0: DataSnapshot) {
-                var user: User? = p0.getValue(User::class.java)
+                var user:User? = p0.getValue(User::class.java)
                 tvUserName.setText(user!!.username)
-                tvUserMail.setText(user!!.email)
-            }
+                tvUserMail.setText(user!!.email)            }
         })
 
 
@@ -176,7 +159,7 @@ class MenuPrincipalActivity : AppCompatActivity() {
 
     private fun addListItems() {
         val drawerLayout: DrawerLayout = findViewById(R.id.drawer_layout)
-        val navView: NavigationView = findViewById(R.id.nav_view)
+        val navView : NavigationView = findViewById(R.id.nav_view)
         val navController = findNavController(R.id.nav_host_fragment)
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
@@ -190,89 +173,80 @@ class MenuPrincipalActivity : AppCompatActivity() {
         val menu = navView.menu
 
         //obtener la llave de nuestro usuario
-        val idUsuario = db.getAplicacionDao().getLoggedUser().toString()
+        val idUsuario=db.getAplicacionDao().getLoggedUser().toString()
 
         //PRUEBA DE ELIMINADO DE LISTA
         //database.getReference("App").child("users").child(idUsuario).child("lists").child("-LvDbu4lMwtaYhMhkTtG").setValue(null)
         //OBTENER AL OBJETO USUARIO PARA OBTENER LAS LISTAS QUE TIENE
-        val userReference = database.getReference("App").child("users").child(idUsuario)
-        userReference.addValueEventListener(object : ValueEventListener {
+        val userReference=database.getReference("App").child("users").child(idUsuario)
+        userReference.addValueEventListener(object : ValueEventListener{
             override fun onCancelled(p0: DatabaseError) {
                 TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
             }
 
             override fun onDataChange(p0: DataSnapshot) {
-                val currentUser: User? = p0.getValue(User::class.java)
+                val currentUser:User? = p0.getValue(User::class.java)
 
                 var idsListas = currentUser!!.lists.keys
 
                 db.getListaDao().DeleteUnexistenLists(idsListas.toList())
 
-                var listasActualmenteSincronizadas =
-                    db.getListaDao().GetCurrentArchivedLists(idsListas.toList())
+                var listasActualmenteSincronizadas = db.getListaDao().GetCurrentArchivedLists(idsListas.toList())
 
                 menu.removeGroup(0)
                 menu.removeGroup(1)
                 //menu.removeGroup(R.id.group_listas)
 
-                for (idLista in idsListas) {
-                    val listReference = database.getReference("App").child("lists").child(idLista)
-                    listReference.addListenerForSingleValueEvent(object : ValueEventListener {
+                for (idLista in idsListas)
+                {
+                    val listReference=database.getReference("App").child("lists").child(idLista)
+                    listReference.addListenerForSingleValueEvent(object : ValueEventListener{
                         override fun onCancelled(p0: DatabaseError) {
                             TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
                         }
-
                         override fun onDataChange(p0: DataSnapshot) {
-                            val currentList: ListFB? = p0.getValue(ListFB::class.java)
-                            currentList!!.id = p0.key
+                            val currentList:ListFB? = p0.getValue(ListFB::class.java)
+                            currentList!!.id=p0.key
 
-                            if (currentList.id !in listasActualmenteSincronizadas) {
+                            if(currentList.id !in listasActualmenteSincronizadas)
+                            {
                                 val ListaAInsertar = ListaEntity(
                                     currentList.id.toString(),
                                     currentList.creator,
                                     currentList.title,
                                     currentList.description,
-                                    currentList.creator, "",
+                                    currentList.creator,"",
                                     currentList.shared,
                                     currentList.listIcon,
-                                    currentList.backgroundColor
-                                )
+                                    currentList.backgroundColor)
                                 db.getListaDao().InsertarLista(ListaAInsertar)
                             }
 
-                            if (currentList!!.shared == false) {
-                                val item = menu.add(0, Menu.NONE, 1, currentList.title)
-                                    .setOnMenuItemClickListener {
-                                        model.setSelectedList(currentList.id.toString())
-                                        model.setCurrentTaskList(
-                                            db.getTareaDao().getTaskFromList(
-                                                currentList.id.toString()
-                                            ) as MutableList<TareaEntity>
-                                        )
-                                        navController.navigate(R.id.nav_home)
-                                        db.getAplicacionDao().setearLista(currentList.id.toString())
-                                        drawerLayout.closeDrawer(GravityCompat.START)
-                                        model.databaseRoom = db
-                                        true
-                                    }.setIcon(GetIconoLista(currentList.listIcon))
-                            } else {
-                                val item = menu.add(1, Menu.NONE, 2, currentList.title)
-                                    .setOnMenuItemClickListener {
-                                        model.setSelectedList(currentList.id.toString())
-                                        model.setCurrentTaskList(
-                                            db.getTareaDao().getTaskFromList(
-                                                currentList.id.toString()
-                                            ) as MutableList<TareaEntity>
-                                        )
-                                        navController.navigate(R.id.nav_home)
-                                        db.getAplicacionDao().setearLista(currentList.id.toString())
-                                        drawerLayout.closeDrawer(GravityCompat.START)
-                                        true
-                                    }.setIcon(GetIconoLista(currentList.listIcon))
+                            if(currentList!!.shared==false)
+                            {
+                                val item = menu.add(0,Menu.NONE,1,currentList.title).setOnMenuItemClickListener {
+                                    model.setSelectedList(currentList.id.toString())
+                                    model.setCurrentTaskList(db.getTareaDao().getTaskFromList(currentList.id.toString()) as MutableList<TareaEntity>)
+                                    navController.navigate(R.id.nav_home)
+                                    db.getAplicacionDao().setearLista(currentList.id.toString())
+                                    drawerLayout.closeDrawer(GravityCompat.START)
+                                    model.databaseRoom=db
+                                    true
+                                }.setIcon(GetIconoLista(currentList.listIcon))
                             }
-                            val tasksReference =
-                                database.getReference("App").child("tasks").child(idLista)
-                            tasksReference.addChildEventListener(object : ChildEventListener {
+                            else
+                            {
+                                val item =menu.add(1,Menu.NONE,2,currentList.title).setOnMenuItemClickListener {
+                                    model.setSelectedList(currentList.id.toString())
+                                    model.setCurrentTaskList(db.getTareaDao().getTaskFromList(currentList.id.toString()) as MutableList<TareaEntity>)
+                                    navController.navigate(R.id.nav_home)
+                                    db.getAplicacionDao().setearLista(currentList.id.toString())
+                                    drawerLayout.closeDrawer(GravityCompat.START)
+                                    true
+                                }.setIcon(GetIconoLista(currentList.listIcon))
+                            }
+                            val tasksReference= database.getReference("App").child("tasks").child(idLista)
+                            tasksReference.addChildEventListener(object : ChildEventListener{
                                 override fun onCancelled(p0: DatabaseError) {
                                     TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
                                 }
@@ -282,10 +256,10 @@ class MenuPrincipalActivity : AppCompatActivity() {
                                 }
 
                                 override fun onChildChanged(p0: DataSnapshot, p1: String?) {
-                                    val currentTask: Task? = p0.getValue(Task::class.java)
-                                    currentTask!!.id = p0.key
+                                    val currentTask:Task?=p0.getValue(Task::class.java)
+                                    currentTask!!.id=p0.key
 
-                                    var TareaModificar: TareaEntity = TareaEntity(
+                                    var TareaModificar:TareaEntity=TareaEntity(
                                         currentTask.id.toString(),
                                         idLista,
                                         currentTask.title,
@@ -301,11 +275,12 @@ class MenuPrincipalActivity : AppCompatActivity() {
                                 }
 
                                 override fun onChildAdded(p0: DataSnapshot, p1: String?) {
-                                    val currentTask: Task? = p0.getValue(Task::class.java)
-                                    currentTask!!.id = p0.key
+                                    val currentTask:Task?=p0.getValue(Task::class.java)
+                                    currentTask!!.id=p0.key
 
-                                    if (db.getTareaDao().BuscarTarea(currentTask.id.toString()).isEmpty()) {
-                                        var TareaInsertar: TareaEntity = TareaEntity(
+                                    if(db.getTareaDao().BuscarTarea(currentTask.id.toString()).isEmpty())
+                                    {
+                                        var TareaInsertar:TareaEntity=TareaEntity(
                                             currentTask.id.toString(),
                                             idLista,
                                             currentTask.title,
@@ -324,10 +299,10 @@ class MenuPrincipalActivity : AppCompatActivity() {
                                 }
 
                                 override fun onChildRemoved(p0: DataSnapshot) {
-                                    val currentTask: Task? = p0.getValue(Task::class.java)
-                                    currentTask!!.id = p0.key
+                                    val currentTask:Task?=p0.getValue(Task::class.java)
+                                    currentTask!!.id=p0.key
 
-                                    var TareaBorrar: TareaEntity = TareaEntity(
+                                    var TareaBorrar:TareaEntity=TareaEntity(
                                         currentTask.id.toString(),
                                         idLista,
                                         currentTask.title,
@@ -429,7 +404,7 @@ class MenuPrincipalActivity : AppCompatActivity() {
                     }
                 }
 
-                dialog.setNegativeButton("No") { _, _ ->
+                dialog.setNegativeButton("No") {_, _->
 
                 }
 
@@ -444,19 +419,26 @@ class MenuPrincipalActivity : AppCompatActivity() {
         }
     }
 
-    fun CargarTareasListaActual() {
-        var listaActual = db.getAplicacionDao().getAplicationList()
-        var usuarioActual = db.getAplicacionDao().getLoggedUser()
-        when (listaActual) {
-            null -> model.setCurrentTaskList(db.getTareaDao().getAllTasks(usuarioActual.toString()).toMutableList())
-            "Todas" -> model.setCurrentTaskList(db.getTareaDao().getAllTasks(usuarioActual.toString()).toMutableList())
-            "Planeadas" -> model.setCurrentTaskList(db.getTareaDao().getPlaneadasTasks(usuarioActual.toString()).toMutableList())
-            "Importantes" -> model.setCurrentTaskList(
-                db.getTareaDao().getImportantTasks(
-                    usuarioActual.toString()
-                ).toMutableList()
-            )
-            else -> model.setCurrentTaskList(db.getTareaDao().getTaskFromList(listaActual).toMutableList())
+    fun CargarTareasListaActual()
+    {
+        var listaActual:String? = db.getAplicacionDao().getAplicationList()
+        var usuarioActual= db.getAplicacionDao().getLoggedUser()
+        if (listaActual!=null) {
+            when (listaActual) {
+                null -> model.setCurrentTaskList(db.getTareaDao().getAllTasks(usuarioActual.toString()).toMutableList())
+                "Todas" -> model.setCurrentTaskList(db.getTareaDao().getAllTasks(usuarioActual.toString()).toMutableList())
+                "Planeadas" -> model.setCurrentTaskList(
+                    db.getTareaDao().getPlaneadasTasks(
+                        usuarioActual.toString()
+                    ).toMutableList()
+                )
+                "Importantes" -> model.setCurrentTaskList(
+                    db.getTareaDao().getImportantTasks(
+                        usuarioActual.toString()
+                    ).toMutableList()
+                )
+                else -> model.setCurrentTaskList(db.getTareaDao().getTaskFromList(listaActual).toMutableList())
+            }
         }
         //model.setCurrentTaskList(db.getTareaDao().getTaskFromList(listaActual).toMutableList())
     }
@@ -471,30 +453,14 @@ class MenuPrincipalActivity : AppCompatActivity() {
         finishAffinity()
     }
 
-    fun GetIconoLista(numeroIcono: Int): Int {
-        return when (numeroIcono) {
-            1 -> R.drawable.trophy_gren
-            2 -> R.drawable.icono_casita
-            3 -> R.drawable.icono_nube
-            else -> R.drawable.trophy_gren
+    fun GetIconoLista(numeroIcono:Int):Int
+    {
+        return when(numeroIcono)
+        {
+            1->R.drawable.trophy_gren
+            2->R.drawable.icono_casita
+            3->R.drawable.icono_nube
+            else->R.drawable.trophy_gren
         }
     }
-
-    fun obtenerFoto(indice: Int): Int {
-        val fotos = arrayOf(
-            R.drawable.foto_01,
-            R.drawable.foto_02,
-            R.drawable.foto_03,
-            R.drawable.foto_04,
-            R.drawable.foto_05,
-            R.drawable.foto_06,
-            R.drawable.foto_07,
-            R.drawable.foto_08,
-            R.drawable.foto_09,
-            R.drawable.foto_10,
-            R.drawable.foto_11
-        )
-        return fotos.get(indice)
-    }
 }
-

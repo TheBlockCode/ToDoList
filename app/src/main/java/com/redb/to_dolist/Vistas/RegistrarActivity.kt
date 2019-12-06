@@ -56,6 +56,7 @@ class RegistrarActivity : AppCompatActivity() {
         imagen = findViewById(R.id.ImagenId)
         btnRegistrar = findViewById(R.id.btnRegistrar)
 
+
         imagen.setOnClickListener {
             seleccionarFoto()
             imagen.setImageResource(obtenerFoto(fotoIndex))

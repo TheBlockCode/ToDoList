@@ -32,12 +32,11 @@ class LoginActivity : AppCompatActivity() {
         setContentView(R.layout.activity_login)
         val db = AppDatabase.getAppDatabase(this)
 
-        var logedUser = db.getAplicacionDao().getLoggedUser()
-        if(logedUser!=null)
-        {
-            val intent = Intent(this@LoginActivity, MenuPrincipalActivity::class.java)
-            startActivity(intent)
-        }
+//        var logedUser = db.getAplicacionDao().getLoggedUser()
+//        if (logedUser != null) {
+//            val intent = Intent(this@LoginActivity, MenuPrincipalActivity::class.java)
+//            startActivity(intent)
+//        }
         Correo = findViewById(R.id.IniciarSesion)
         Contrasña = findViewById(R.id.Contraseña)
         IniciarSesion = findViewById(R.id.btnIniciar)
@@ -112,17 +111,13 @@ class LoginActivity : AppCompatActivity() {
 
                                 )
 
-                                Usuario.LogearUsuario(UserIniciarSesion, db)
+//                                Usuario.LogearUsuario(UserIniciarSesion, db)
+//                                db.getAplicacionDao().setearLista("Todas")
                                 val intent =
                                     Intent(this@LoginActivity, MenuPrincipalActivity::class.java)
                                 startActivity(intent)
                             }
                         }
-
-                        Usuario.LogearUsuario(UserIniciarSesion, db)
-                        db.getAplicacionDao().setearLista("Todas")
-                        val intent = Intent(this@LoginActivity, MenuPrincipalActivity::class.java)
-                        startActivity(intent)
                     }
                 })
             }
@@ -135,8 +130,5 @@ class LoginActivity : AppCompatActivity() {
         finishAffinity()
     }
 
-    override fun onBackPressed() {
-        super.onBackPressed()
-        finishAffinity()
-    }
 }
+

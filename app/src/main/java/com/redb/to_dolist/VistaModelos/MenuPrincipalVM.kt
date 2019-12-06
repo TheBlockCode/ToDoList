@@ -43,6 +43,7 @@ class MenuPrincipalVM : ViewModel() {
         taskList.value = newList
     }
 
+
     fun getCurrentTaskList() : MutableLiveData<MutableList<TareaEntity>> {
         return taskList
     }

@@ -13,6 +13,7 @@ data class Usuario(
     val email: String
 ) {
 
+
     fun TryRegistrarUsuario(db: AppDatabase, usuario: Usuario):Int {
         val usuarioExiste = db.getUsuarioDao().getUsuarioByName(usuario.idUsuario)
 
@@ -47,6 +48,16 @@ data class Usuario(
         fun DeslogearUsuario(idUsuario: String,db:AppDatabase)
         {
             db.getUsuarioDao().deslogearUsuario(idUsuario)
+        }
+
+        fun EstablecerFotoDePerfil(idUsuario: String,db: AppDatabase):Int{
+            val IndexFoto = db.getUsuarioDao().ConseguirFotoDePerfil(idUsuario)
+            return IndexFoto
+
+        }
+        fun getUser(db: AppDatabase):String{
+            val user=  db.getAplicacionDao().getLoggedUser()
+            return user!!
         }
 
     }

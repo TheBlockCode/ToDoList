@@ -25,4 +25,6 @@ interface UsuarioDao {
 
     @Insert
     fun InsertarUsuario(usuario:UsuarioEntity)
+    @Query("SELECT selectedAvatar FROM Usuario WHERE idUsuario = :id")
+    fun ConseguirFotoDePerfil(id:String):Int
 }

@@ -85,6 +85,9 @@ class MenuPrincipalActivity : AppCompatActivity() {
         tvUserName = headerLayout.findViewById(R.id.nav_textView_userName)
         tvUserMail = headerLayout.findViewById(R.id.nav_textView_userMail)
         FotoIndex = headerLayout.findViewById(R.id.nav_imageView_avatar)
+        val usuarioId = db.getAplicacionDao().getLoggedUser()!!
+        val index = db.getUsuarioDao().ConseguirFotoDePerfil(usuarioId)
+        FotoIndex.setImageResource(obtenerFoto(index))
 
         val menu = navView.menu
         val usuarioActual = db.getAplicacionDao().getLoggedUser()
@@ -126,14 +129,14 @@ class MenuPrincipalActivity : AppCompatActivity() {
 
         }
 
-        menu.findItem(R.id.nav_imageView_avatar).setOnMenuItemClickListener {
+       /* menu.findItem(R.id.nav_imageView_avatar).setOnMenuItemClickListener {
 
             val usuarioId = db.getAplicacionDao().getLoggedUser()!!
             val index = db.getUsuarioDao().ConseguirFotoDePerfil(usuarioId)
             FotoIndex.setImageResource(obtenerFoto(index))
             true
 
-        }
+        }*/
 
         db.getAplicacionDao().getAll()
 
